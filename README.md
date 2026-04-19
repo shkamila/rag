@@ -127,20 +127,6 @@ OPENAI_MODEL=gpt-4o-mini
 
 ---
 
-## Run
-
-```bash
-streamlit run streamlit_app.py
-```
-
-Open http://localhost:8501 and:
-
-1. Click **Carica cartella predefinita** (or upload files from the sidebar).
-2. Adjust **top-K** and **α** if you want to see how retrieval changes.
-3. Type a question and hit **Chiedi all'LLM** (or **Solo retrieval** to inspect the chunks the LLM would see).
-
----
-
 ## Using the library directly
 
 ```python
