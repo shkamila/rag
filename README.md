@@ -1,4 +1,4 @@
-# Hybrid RAG System — BM25 + FAISS + Reciprocal Rank Fusion
+# Hybrid RAG System 
 
 > A production-oriented Retrieval-Augmented Generation pipeline that combines lexical and semantic search over multi-format documents, with a clean modular architecture and an interactive Streamlit interface.
 
