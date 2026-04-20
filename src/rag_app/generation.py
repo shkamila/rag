@@ -1,11 +1,3 @@
-"""LLM wiring and end-to-end RAG answering.
-
-`rag_answer` is the one-line entry point: given a question and an Index,
-it runs hybrid retrieval, builds a cited context, and asks the LLM to
-answer using only that context. The provider is chosen via `Settings`,
-so the same code runs against a local Ollama model or the OpenAI API.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -48,7 +40,7 @@ def get_llm(settings: Settings) -> Any:
         )
 
     if provider == "openai":
-        # Imported lazily so the package works without the openai LangChain extra.
+        
         try:
             from langchain_openai import ChatOpenAI
         except ImportError as e:
