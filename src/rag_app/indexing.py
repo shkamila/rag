@@ -1,15 +1,3 @@
-"""Chunking and index construction.
-
-Given a list of Documents, produce a bundled Index object that contains:
-- the chunks (with their metadata)
-- a BM25 index for keyword search
-- a FAISS index for semantic search
-- the sentence-transformers embedder (reused at query time)
-
-Keeping all four in one object makes the retrieval functions in
-`retrieval.py` trivially simple: they just take an `Index` and a query.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -59,11 +47,9 @@ class Index:
     def n_chunks(self) -> int:
         return len(self.chunks)
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:  
         return f"Index(n_chunks={self.n_chunks}, dim={self.faiss.d})"
 
-
-# --- Builders ----------------------------------------------------------------
 
 def chunk_documents(
     docs: List[Document],
