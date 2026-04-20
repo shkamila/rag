@@ -1,9 +1,4 @@
-"""Application configuration loaded from environment variables.
 
-All tunable parameters live here so we never hard-code them in the
-retrieval / generation code. Use `Settings.from_env()` to load values
-from environment (and .env file via python-dotenv in the entry point).
-"""
 
 from __future__ import annotations
 
@@ -15,34 +10,33 @@ from typing import Dict
 
 @dataclass
 class Settings:
-    """App-wide settings. Immutable after load."""
 
-    # --- LLM provider ---
-    llm_provider: str = "ollama"          # "ollama" | "openai"
+    #  LLM provider 
+    llm_provider: str = "ollama"         
     llm_temperature: float = 0.3
 
-    # --- Ollama (local) ---
+    #  ollama
     ollama_endpoint: str = "http://localhost:11434"
     ollama_api_key: str = "ollama"
     llm_model: str = "gemma3:4b"
 
-    # --- OpenAI (optional fallback) ---
+    #  OpenAI 
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
 
-    # --- Embedding model (runs locally) ---
+    # embedding model 
     embedding_model: str = "all-MiniLM-L6-v2"
 
-    # --- Chunking ---
+    # chunking 
     chunk_size: int = 400
     chunk_overlap: int = 60
 
-    # --- Retrieval defaults ---
+    # retrieval 
     default_k: int = 4
-    hybrid_alpha: float = 0.5   # 0.0 = BM25 only, 1.0 = semantic only
-    rrf_k: int = 60             # Reciprocal Rank Fusion smoothing constant
+    hybrid_alpha: float = 0.5  
+    rrf_k: int = 60             
 
-    # --- Data ---
+    # data 
     data_dir: Path = field(default_factory=lambda: Path.home() / "Desktop" / "rag")
     domain_map: Dict[str, str] = field(default_factory=lambda: {
         "argomenti_sportivi": "sport",
