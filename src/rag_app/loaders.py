@@ -1,10 +1,3 @@
-"""Document loaders for PDF, DOCX, PPTX, XLSX.
-
-Each loader returns the raw text of the document. A `Document` bundle
-also carries metadata (source filename, format, domain) that is later
-propagated to each chunk for citation in the final answer.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -25,8 +18,6 @@ class Document:
     format: str
     domain: str
 
-
-# --- Per-format loaders ------------------------------------------------------
 
 def load_pdf(path: str) -> str:
     """Extract text from a PDF, page by page."""
@@ -77,8 +68,6 @@ LOADERS: Dict[str, Callable[[str], str]] = {
     ".xlsx": load_xlsx,
 }
 
-
-# --- Public API --------------------------------------------------------------
 
 def load_document(path: Union[str, Path], domain: str = "default") -> Document:
     """Load a single file and wrap it in a Document with metadata.
