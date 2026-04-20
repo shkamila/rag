@@ -13,7 +13,6 @@ from typing import List
 import streamlit as st
 from dotenv import load_dotenv
 
-# Make `src/` importable when Streamlit runs from the project root.
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from rag_app.config import Settings  # noqa: E402
@@ -30,9 +29,6 @@ st.set_page_config(
 )
 
 
-# ---------------------------------------------------------------------------
-# Caching helpers
-# ---------------------------------------------------------------------------
 
 @st.cache_resource(show_spinner=False)
 def get_settings() -> Settings:
@@ -62,9 +58,6 @@ def build_cached_index(signature: str, _docs: List[Document]) -> Index:
     )
 
 
-# ---------------------------------------------------------------------------
-# Session state
-# ---------------------------------------------------------------------------
 
 if "loaded_docs" not in st.session_state:
     st.session_state.loaded_docs = []  # type: List[Document]
@@ -74,14 +67,13 @@ if "last_response" not in st.session_state:
 settings = get_settings()
 
 
-# ---------------------------------------------------------------------------
-# Sidebar — documents + retrieval settings + status
-# ---------------------------------------------------------------------------
+# Sidebar 
+
 
 with st.sidebar:
     st.title("📁 Documenti")
 
-    # --- Documents -----------------------------------------------------------
+    #  Documents
     st.subheader("Documenti")
 
     uploaded = st.file_uploader(
@@ -100,7 +92,7 @@ with st.sidebar:
                     tmp_path = tmp.name
                 try:
                     doc = load_document(tmp_path, domain=upload_domain)
-                    # Keep the original filename for citations
+
                     doc = Document(
                         text=doc.text,
                         source=f.name,
@@ -121,13 +113,12 @@ with st.sidebar:
     ):
         st.session_state.loaded_docs = []
         st.session_state.last_response = None
-        # Clear the cached index, since its key depends on the docs signature.
         build_cached_index.clear()
         st.rerun()
 
     st.divider()
 
-    # --- Retrieval settings --------------------------------------------------
+    #  Retrieval settings 
     st.subheader("Retrieval")
     k = st.slider("Top-K chunk", 1, 10, settings.default_k)
     alpha = st.slider(
@@ -138,7 +129,7 @@ with st.sidebar:
 
     st.divider()
 
-    # --- LLM info ------------------------------------------------------------
+    # LLM info 
     st.subheader("LLM")
     st.caption(f"**Provider:** `{settings.llm_provider}`")
     if settings.llm_provider == "ollama":
@@ -153,10 +144,6 @@ with st.sidebar:
     st.subheader("Stato")
     st.metric("Documenti", len(st.session_state.loaded_docs))
 
-
-# ---------------------------------------------------------------------------
-# Main area
-# ---------------------------------------------------------------------------
 
 st.title("Knowledge Base")
 if not st.session_state.loaded_docs:
@@ -177,7 +164,7 @@ if not st.session_state.loaded_docs:
         )
     st.stop()
 
-# Build / reuse the index
+# build the index
 sig = docs_signature(st.session_state.loaded_docs)
 index = build_cached_index(sig, st.session_state.loaded_docs)
 
@@ -197,7 +184,7 @@ c1, c2, _ = st.columns([1, 1, 4])
 ask_llm = c1.button("Chiedi all'LLM", type="primary", disabled=not question)
 only_retrieve = c2.button("Solo retrieval", disabled=not question)
 
-# --- Action: full RAG --------------------------------------------------------
+# ---
 if ask_llm and question:
     t0 = time.time()
     try:
@@ -218,7 +205,7 @@ if ask_llm and question:
             "che il modello sia installato (`ollama pull gemma3:4b`)."
         )
 
-# --- Action: retrieval only --------------------------------------------------
+# retrieval 
 if only_retrieve and question:
     t0 = time.time()
     with st.spinner("Cerco chunk rilevanti..."):
@@ -233,7 +220,6 @@ if only_retrieve and question:
         with st.expander(label):
             st.write(r.text)
 
-# --- Render last RAG response (survives reruns) ------------------------------
 if st.session_state.last_response is not None and not only_retrieve:
     response, elapsed = st.session_state.last_response
 
