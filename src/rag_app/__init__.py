@@ -1,13 +1,3 @@
-"""RAG application package.
-
-Public API:
-    - Settings: app-wide configuration (loads from environment)
-    - Document, load_document, load_directory: document ingestion
-    - Index, build_index: chunking + BM25 + FAISS
-    - keyword_search, semantic_search, hybrid_search: retrieval
-    - rag_answer, RAGResponse: end-to-end RAG call
-"""
-
 from .config import Settings
 from .loaders import Document, load_document, load_directory
 from .indexing import Chunk, Index, build_index
