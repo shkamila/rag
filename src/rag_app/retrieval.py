@@ -1,12 +1,3 @@
-"""Retrieval strategies: keyword (BM25), semantic (FAISS), and hybrid (RRF).
-
-All three return a list of `RetrievedChunk` with score and rank, sorted
-descending by relevance. The hybrid search uses Reciprocal Rank Fusion:
-for each doc, score = alpha / (sem_rank + k) + (1-alpha) / (bm25_rank + k).
-RRF is preferred over raw score fusion because BM25 and cosine similarity
-live on incomparable scales.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -37,11 +28,8 @@ class RetrievedChunk:
     def domain(self) -> str:
         return self.chunk.domain
 
-
-# --- Search strategies -------------------------------------------------------
-
 def keyword_search(index: Index, query: str, k: int = 5) -> List[RetrievedChunk]:
-    """BM25 lexical search — exact term matches, fast, no semantic understanding."""
+    """BM25 lexical search; exact term matches, fast, no semantic understanding."""
     tokens = query.lower().split()
     scores = index.bm25.get_scores(tokens)
     top_k = np.argsort(scores)[::-1][:k]
@@ -96,13 +84,13 @@ def hybrid_search(
     bm25_order = np.argsort(bm25_scores)[::-1]
     bm25_rank = {int(i): r for r, i in enumerate(bm25_order)}
 
-    # Semantic ranking
+    # semantic ranking
     q_vec = index.embedder.encode([query]).astype("float32")
     faiss.normalize_L2(q_vec)
     _, sem_indices = index.faiss.search(q_vec, n)
     sem_rank = {int(i): r for r, i in enumerate(sem_indices[0])}
 
-    # Fuse
+    # fuse
     rrf_scores = {}
     for i in range(n):
         kw  = (1.0 - alpha) / (bm25_rank.get(i, n) + rrf_k)
